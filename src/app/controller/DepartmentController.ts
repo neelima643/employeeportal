@@ -7,6 +7,7 @@ import { CreateDepartmentDto } from "../dto/createDepartmentdto";
 import validationMiddleware from "../middleware/validationMiddleware";
 import { createUuid } from "../dto/createUuid";
 import authorize from "../middleware/authorize";
+import { Department } from "../entities/Department";
 
 class DepartmentController extends AbstractController {
   constructor(private departmentService: DepartmentService) {
@@ -53,7 +54,7 @@ class DepartmentController extends AbstractController {
 
   private departmentResponse = async (request: RequestWithUser, response: Response, next: NextFunction) => {
     try {
-      const data: any = await this.departmentService.getAllEmployee();
+      const data: Department[] = await this.departmentService.getAllDepartment();
       response.status(200);
       response.send(this.fmt.formatResponse(data, Date.now() - request.startTime, "OK", 1));
     } catch (error) {

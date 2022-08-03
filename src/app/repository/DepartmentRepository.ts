@@ -2,7 +2,7 @@ import { getConnection } from "typeorm";
 import { Department } from "../entities/Department";
 
 export class DepartmentRepository{
-    async getAllEmployee(){
+    async getAllDepartment(){
         const departmentRepo = getConnection().getRepository(Department);
         return departmentRepo.find();
     }

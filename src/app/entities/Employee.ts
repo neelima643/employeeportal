@@ -1,5 +1,6 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, CreateDateColumn } from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, CreateDateColumn, OneToOne } from "typeorm";
 import { AbstractEntity } from "./abstractEntity";
+import { Address } from "./address";
 
 import { Department } from "./Department";
 
@@ -10,32 +11,36 @@ import { Department } from "./Department";
         @Column({ nullable: false })
         public name: string;
 
-        @Column({nullable : true})
+        @Column({nullable : false})
         public username: string;
 
-        @Column({nullable : true})
+        @Column({nullable : false})
         public passsword: string;
 
 
-        @Column({ nullable: true })
-        public join_date?: Date;
+        @Column({ nullable: false })
+        public join_date: Date;
 
-        @Column({ nullable: true })
+        @Column({ nullable: false })
         public role: string;
 
-        @Column({ nullable: true })
+        @Column({ nullable: false })
         public status: string;
 
-        @Column({ nullable: true })
+        @Column({ nullable: false })
         public experience: number;
-        
-
         
         @ManyToOne(() => Department, { cascade: true })
     @JoinColumn()
     public department: Department;
         @Column({ nullable: false })
         public departmentId: string;
+
+        @OneToOne(() => Address, { cascade: true })
+    @JoinColumn()
+    public address: Address;
+        @Column({ nullable: false })
+        public addressId: string;
         
 }
 

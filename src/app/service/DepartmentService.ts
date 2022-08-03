@@ -12,11 +12,11 @@ export class DepartmentService{
     constructor(private departmentRepo: DepartmentRepository) {
 
     }
-    getAllEmployee(){
+    getAllDepartment(){
         const departmentResp = [
             
         ]
-        return this.departmentRepo.getAllEmployee();
+        return this.departmentRepo.getAllDepartment();
     }
 
     public async createDepartment(departmentDetails: any) {

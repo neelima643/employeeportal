@@ -8,6 +8,8 @@ import jsonwebtoken from "jsonwebtoken"
 import UserNotAuthorizedException from "../exception/UserNotAuthorizedException";
 import IncorrectUsernameOrPasswordException from "../exception/IncorrectUsernameOrPasswordException";
 import { ErrorCodes } from "../util/errorCode";
+import { CreateEmployeeDto } from "../dto/createEmployee";
+import { Address } from "../entities/address";
 export class EmployeeService{
     constructor(private employeeRepo: EmployeeRespository) {
 
@@ -29,7 +31,18 @@ export class EmployeeService{
 
     public async createEmployee(employeeDetails: any) {
 
+        
         try {
+
+            const newAddress = plainToClass(Employee, {
+                addressLane1: employeeDetails.address.addressLane1,
+                addressLane2: employeeDetails.address.addressLane2,
+                city: employeeDetails.address.city,
+                state: employeeDetails.address.state,
+                country: employeeDetails.address.country,
+                pincode: employeeDetails.address.pincode,
+            });
+        
             const newEmployee = plainToClass(Employee, {
                 name: employeeDetails.name,
                 username: employeeDetails.username,
@@ -38,7 +51,8 @@ export class EmployeeService{
                 departmentId: employeeDetails.departmentId,
                 status: employeeDetails.status,
                 join_date: employeeDetails.join_date,
-                experience: employeeDetails.experience
+                experience: employeeDetails.experience,
+                address: newAddress
             });
         
             const save = await this.employeeRepo.saveEmployeeDetails(newEmployee);
@@ -48,19 +62,33 @@ export class EmployeeService{
         }
     }
 
-    public async updateEmployeeDetails(employeeId: string, employeeDetails: any) {
+    public async updateEmployeeDetails(employeeId: string, employeeDetails: CreateEmployeeDto) {
         try {
+            const empdetails = await this.employeeRepo.getEmployeeById(employeeId)
+
+            const existAddress = plainToClass(Address, {
+                id: empdetails.addressId,
+                addressLane1: employeeDetails.address.addressLane1,
+                addressLane2: employeeDetails.address.addressLane2,
+                city: employeeDetails.address.city,
+                state: employeeDetails.address.state,
+                country: employeeDetails.address.country,
+                pincode: employeeDetails.address.pincode,
+            });
+
                 const existEmployee = plainToClass(Employee, {
+                id: employeeId,
                 name: employeeDetails.name,
                 username: employeeDetails.username,
-                passsword: employeeDetails.password ? await bcrypt.hash(employeeDetails.password, 10): '',
+                passsword: employeeDetails.passsword ? await bcrypt.hash(employeeDetails.passsword, 10): '',
                 role: employeeDetails.role,
                 departmentId: employeeDetails.departmentId,
                 status: employeeDetails.status,
                 join_date: employeeDetails.join_date,
-                experience: employeeDetails.experience
+                experience: employeeDetails.experience,
+                address: existAddress
             });
-            const updateEmployeeDetails = await this.employeeRepo.updateEmployeeDetails(employeeId, existEmployee);
+            const updateEmployeeDetails = await this.employeeRepo.updateEmployeeDetails(existEmployee);
             return updateEmployeeDetails;
         } catch (err) {
             throw new HttpException(400, ErrorCodes.USER_NOT_FOUND.CODE, ErrorCodes.USER_NOT_FOUND.MESSAGE );
