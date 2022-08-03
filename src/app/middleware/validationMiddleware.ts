@@ -15,24 +15,30 @@ import { request } from "http";
 function validationMiddleware<T>(type: any, parameter: string, skipMissingProperties = false): express.RequestHandler {
   return (req, res, next) => {
 
-      /*let reqpar;
+      let reqstruct;
+ 
 
       if(parameter == APP_CONSTANTS.body) {
-          reqpar = req.body;
+        reqstruct = req.body;
       }
       else if(parameter == APP_CONSTANTS.params) {
-          reqpar = req.params;
-      }*/
-    const requestBody = plainToClass(type, req.body);
+          reqstruct = req.params;
+      }
+      
+    const requestBody = plainToClass(type, reqstruct);
     validate(
       requestBody, { skipMissingProperties, forbidUnknownValues: true, whitelist: true })
       .then((errors: ValidationError[]) => {
+        
         if (errors.length > 0) {
           const errorDetail = ErrorCodes.VALIDATION_ERROR;
-          //next(errors);
+     
           next(new HttpException(400, errorDetail.MESSAGE, errorDetail.CODE, errors))
         } else {
+           if(parameter === 'body') {
             req.body = requestBody;
+
+           }
           next();
         }
       });

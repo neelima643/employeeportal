@@ -6,14 +6,19 @@ import APP_CONSTANTS from "../constants";
 
 
 const authorize = (permittedRoles: string[]) => {
+
   return async (
     req: RequestWithUser,
     res: express.Response,
     next: express.NextFunction
   ) => {
     try {
+       
       const token = getTokenFromRequestHeader(req);
+      
+
       jsonwebtoken.verify(token, process.env.JWT_TOKEN_SECRET);
+
       const data: any= jsonwebtoken.decode(token);
         
       

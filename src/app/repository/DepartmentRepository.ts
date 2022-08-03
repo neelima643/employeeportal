@@ -29,4 +29,12 @@ export class DepartmentRepository{
             id
         });
     }
+    
+    public async getDepartmentByName(userName: string) {
+        const departmentRepo = getConnection().getRepository(Department);
+        const departmentDetail = await departmentRepo.findOne({
+            where: { username: userName },
+        });
+        return departmentDetail;
+    }
 }

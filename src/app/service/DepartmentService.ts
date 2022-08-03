@@ -1,7 +1,12 @@
 import { plainToClass } from "class-transformer";
 import { Department } from "../entities/Department";
 import HttpException from "../exception/HttpException";
+import IncorrectUsernameOrPasswordException from "../exception/IncorrectUsernameOrPasswordException";
+import UserNotAuthorizedException from "../exception/UserNotAuthorizedException";
 import { DepartmentRepository } from "../repository/DepartmentRepository";
+import { ErrorCodes } from "../util/errorCode";
+import jsonwebtoken from "jsonwebtoken"
+
 
 export class DepartmentService{
     constructor(private departmentRepo: DepartmentRepository) {
@@ -9,37 +14,7 @@ export class DepartmentService{
     }
     getAllEmployee(){
         const departmentResp = [
-            {
-                "id": "af168383-b350-4894-8ca3-34811ffa34ac",
-                "name": "Rahul",
-                "joiningDate": "2021-07-15T14:48:00.000Z",
-                "role": "dev",
-                "experience": 1,
-                "status": "Active",
-                "designation": 'Associate',
-                "employeeProofUrl": "erer",
-                "email": "test@test.com",
-                "password": "123456",
-                "departments": []
-            },
-            {
-                "id": "763a5477-c283-4724-94ce-6dc7a5688685",
-                "name": "hawari",
-                "joiningDate": "2020-01-08T10:53:09.506Z",
-                "role": "dev",
-                "experience": 5,
-                "status": "Active",
-                "designation": "Senior",
-                "employeeProofUrl": "http://",
-                "email": "test@gmail.com",
-                "password": "teereddf",
-                "departments": [
-                    {
-                        "id": "b4fec1fd-5921-4c0e-883c-0904c4a70bad",
-                        "name": "developers"
-                    }
-                ]
-            }
+            
         ]
         return this.departmentRepo.getAllEmployee();
     }
@@ -48,16 +23,13 @@ export class DepartmentService{
         try {
             const newDepartment = plainToClass(Department, {
                 name: departmentDetails.name,
-                //username: employeeDetails.username,
-                //age: employeeDetails.age,
-                //departmentId: departmentDetails.departmentId,
                 deptHead: departmentDetails.deptHead
-                //isActive: true,
             });
             const save = await this.departmentRepo.saveDepartmentDetails(newDepartment);
             return save;
-        } catch (err) {
-            //throw new HttpException(400, "Failed to create employee", );
+        } 
+        catch (err) {
+            throw new HttpException(400, ErrorCodes.REQUEST_FAILED.CODE, ErrorCodes.REQUEST_FAILED.MESSAGE );
         }
     }
 
@@ -65,29 +37,24 @@ export class DepartmentService{
         try {
             const existDepartment = plainToClass(Department, {
                 name: departmentDetails.name,
-                //username: employeeDetails.username,
-                //age: employeeDetails.age,
-                //departmentId: departmentDetails.departmentId,
+                
                 deptHead: departmentDetails.deptHead
-                //isActive: true,
+               
             });
             const updates = await this.departmentRepo.updateDepartmentDetails(departmentId, existDepartment);
             return updates;
         } catch (err) {
-            //throw new HttpException(400, "Failed to create employee", );
+            throw new HttpException(400, ErrorCodes.USER_NOT_FOUND.CODE, ErrorCodes.USER_NOT_FOUND.MESSAGE );
         }
     }
 
     public async softDeleteDepartmentById(departmentId: string) {
         try {
             
-            //const save = await this.employeeRepo.updateEmployeeDetails(newEmployee);
-            
             const softDeletes = await this.departmentRepo.softDeleteDepartmentById(departmentId);
             return softDeletes;
-            //return save;
         } catch (err) {
-            //throw new HttpException(400, "Failed to create employee", );
+            throw new HttpException(400, ErrorCodes.USER_NOT_FOUND.CODE, ErrorCodes.USER_NOT_FOUND.MESSAGE );
         }
     }
     
